@@ -27,6 +27,8 @@ import (
 	"os/signal"
 	"sync"
 	"syscall"
+
+	"github.com/sapcc/go-bits/errext"
 )
 
 func main() {
@@ -55,12 +57,11 @@ func main() {
 	cancel()
 	wg.Wait()
 
-	switch err := err.(type) {
-	case nil:
+	if err == nil {
 		os.Exit(0)
-	case *exec.ExitError:
-		os.Exit(err.ExitCode())
-	default:
+	} else if exitErr, ok := errext.As[*exec.ExitError](err); ok {
+		os.Exit(exitErr.ExitCode())
+	} else {
 		fmt.Fprintln(os.Stderr, "error: "+err.Error())
 		os.Exit(1)
 	}

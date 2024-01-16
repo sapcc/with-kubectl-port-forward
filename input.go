@@ -24,7 +24,7 @@ import (
 	"os"
 )
 
-func splitArgs() ([]string, []string) {
+func splitArgs() (argsForPortForward, cmdline []string) {
 	doubleDashIndex := -1
 	for idx, arg := range os.Args {
 		if idx == 0 {
