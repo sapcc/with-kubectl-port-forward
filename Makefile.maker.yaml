@@ -1,0 +1,9 @@
+# Configuration file for <https://github.com/sapcc/go-makefile-maker>
+
+binaries:
+  - name:        with-kubectl-port-forward
+    fromPackage: .
+    installTo:   bin/
+
+vendoring:
+  enabled: true
