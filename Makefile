@@ -31,23 +31,27 @@ else
 endif
 
 install: FORCE build/with-kubectl-port-forward
-	install -D -m 0755 build/with-kubectl-port-forward "$(DESTDIR)$(PREFIX)/bin/with-kubectl-port-forward"
+	install -d -m 0755 "$(DESTDIR)$(PREFIX)/bin"
+	install -m 0755 build/with-kubectl-port-forward "$(DESTDIR)$(PREFIX)/bin/with-kubectl-port-forward"
 
 # which packages to test with "go test"
 GO_TESTPKGS := $(shell go list -f '{{if or .TestGoFiles .XTestGoFiles}}{{.ImportPath}}{{end}}' ./...)
 # which packages to measure coverage for
 GO_COVERPKGS := $(shell go list ./...)
-# to get around weird Makefile syntax restrictions, we need variables containing a space and comma
+# to get around weird Makefile syntax restrictions, we need variables containing nothing, a space and comma
+null :=
 space := $(null) $(null)
 comma := ,
 
-check: FORCE build-all static-check build/cover.html
+check: FORCE static-check build/cover.html build-all
 	@printf "\e[1;32m>> All checks successful.\e[0m\n"
 
 prepare-static-check: FORCE
 	@if ! hash golangci-lint 2>/dev/null; then printf "\e[1;36m>> Installing golangci-lint (this may take a while)...\e[0m\n"; go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest; fi
+	@if ! hash go-licence-detector 2>/dev/null; then printf "\e[1;36m>> Installing go-licence-detector...\e[0m\n"; go install go.elastic.co/go-licence-detector@latest; fi
+	@if ! hash addlicense 2>/dev/null; then  printf "\e[1;36m>> Installing addlicense...\e[0m\n";  go install github.com/google/addlicense@latest; fi
 
-static-check: FORCE prepare-static-check
+run-golangci-lint: FORCE prepare-static-check
 	@printf "\e[1;36m>> golangci-lint\e[0m\n"
 	@golangci-lint run
 
@@ -58,6 +62,8 @@ build/cover.out: FORCE | build
 build/cover.html: build/cover.out
 	@printf "\e[1;36m>> go tool cover > build/cover.html\e[0m\n"
 	@go tool cover -html $< -o $@
+
+static-check: FORCE run-golangci-lint check-dependency-licenses check-license-headers
 
 build:
 	@mkdir $@
@@ -72,19 +78,36 @@ vendor-compat: FORCE
 	go mod vendor
 	go mod verify
 
-license-headers: FORCE
-	@if ! hash addlicense 2>/dev/null; then printf "\e[1;36m>> Installing addlicense...\e[0m\n"; go install github.com/google/addlicense@latest; fi
-	find * \( -name vendor -type d -prune \) -o \( -name \*.go -exec addlicense -c "SAP SE" -- {} + \)
+license-headers: FORCE prepare-static-check
+	@printf "\e[1;36m>> addlicense\e[0m\n"
+	@addlicense -c "SAP SE"  -- $(patsubst $(shell go list .)%,.%/*.go,$(shell go list ./...))
+
+check-license-headers: FORCE prepare-static-check
+	@printf "\e[1;36m>> addlicense --check\e[0m\n"
+	@addlicense --check  -- $(patsubst $(shell go list .)%,.%/*.go,$(shell go list ./...))
+
+check-dependency-licenses: FORCE prepare-static-check
+	@printf "\e[1;36m>> go-licence-detector\e[0m\n"
+	@go list -m -mod=readonly -json all | go-licence-detector -includeIndirect -rules .license-scan-rules.json -overrides .license-scan-overrides.jsonl
 
 clean: FORCE
 	git clean -dxf build
 
+vars: FORCE
+	@printf "DESTDIR=$(DESTDIR)\n"
+	@printf "GO_BUILDFLAGS=$(GO_BUILDFLAGS)\n"
+	@printf "GO_COVERPKGS=$(GO_COVERPKGS)\n"
+	@printf "GO_LDFLAGS=$(GO_LDFLAGS)\n"
+	@printf "GO_TESTENV=$(GO_TESTENV)\n"
+	@printf "GO_TESTPKGS=$(GO_TESTPKGS)\n"
+	@printf "PREFIX=$(PREFIX)\n"
 help: FORCE
 	@printf "\n"
 	@printf "\e[1mUsage:\e[0m\n"
 	@printf "  make \e[36m<target>\e[0m\n"
 	@printf "\n"
 	@printf "\e[1mGeneral\e[0m\n"
+	@printf "  \e[36mvars\e[0m                             Display values of relevant Makefile variables.\n"
 	@printf "  \e[36mhelp\e[0m                             Display this help.\n"
 	@printf "\n"
 	@printf "\e[1mBuild\e[0m\n"
@@ -94,15 +117,18 @@ help: FORCE
 	@printf "\n"
 	@printf "\e[1mTest\e[0m\n"
 	@printf "  \e[36mcheck\e[0m                            Run the test suite (unit tests and golangci-lint).\n"
-	@printf "  \e[36mprepare-static-check\e[0m             Install golangci-lint. This is used in CI, you should probably install golangci-lint using your package manager.\n"
-	@printf "  \e[36mstatic-check\e[0m                     Run golangci-lint.\n"
+	@printf "  \e[36mprepare-static-check\e[0m             Install any tools required by static-check. This is used in CI before dropping privileges, you should probably install all the tools using your package manager\n"
+	@printf "  \e[36mrun-golangci-lint\e[0m                Install and run golangci-lint. Installing is used in CI, but you should probably install golangci-lint using your package manager.\n"
 	@printf "  \e[36mbuild/cover.out\e[0m                  Run tests and generate coverage report.\n"
 	@printf "  \e[36mbuild/cover.html\e[0m                 Generate an HTML file with source code annotations from the coverage report.\n"
+	@printf "  \e[36mstatic-check\e[0m                     Run static code checks\n"
 	@printf "\n"
 	@printf "\e[1mDevelopment\e[0m\n"
 	@printf "  \e[36mvendor\e[0m                           Run go mod tidy, go mod verify, and go mod vendor.\n"
 	@printf "  \e[36mvendor-compat\e[0m                    Same as 'make vendor' but go mod tidy will use '-compat' flag with the Go version from go.mod file as value.\n"
-	@printf "  \e[36mlicense-headers\e[0m                  Add license headers to all .go files excluding the vendor directory.\n"
+	@printf "  \e[36mlicense-headers\e[0m                  Add license headers to all non-vendored .go files.\n"
+	@printf "  \e[36mcheck-license-headers\e[0m            Check license headers in all non-vendored .go files.\n"
+	@printf "  \e[36mcheck-dependency-licenses\e[0m        Check all dependency licenses using go-licence-detector.\n"
 	@printf "  \e[36mclean\e[0m                            Run git clean.\n"
 
 .PHONY: FORCE

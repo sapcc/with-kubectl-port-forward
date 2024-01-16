@@ -1,0 +1,49 @@
+{
+  "extends": [
+    "config:base",
+    "default:pinDigestsDisabled",
+    "mergeConfidence:all-badges",
+    "docker:disable"
+  ],
+  "assignees": [
+    "majewsky",
+    "SuperSandro2000"
+  ],
+  "commitMessageAction": "Renovate: Update",
+  "constraints": {
+    "go": "1.21"
+  },
+  "postUpdateOptions": [
+    "gomodTidy",
+    "gomodUpdateImportPaths"
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": [
+        "golang"
+      ],
+      "allowedVersions": "1.21.x"
+    },
+    {
+      "matchPackagePatterns": [
+        "^github\\.com\\/sapcc\\/.*"
+      ],
+      "automerge": true,
+      "groupName": "github.com/sapcc"
+    },
+    {
+      "excludePackagePatterns": [
+        "^github\\.com\\/sapcc\\/.*"
+      ],
+      "matchPackagePatterns": [
+        ".*"
+      ],
+      "groupName": "External dependencies"
+    }
+  ],
+  "prHourlyLimit": 0,
+  "schedule": [
+    "before 8am on Friday"
+  ],
+  "semanticCommits": "disabled"
+}

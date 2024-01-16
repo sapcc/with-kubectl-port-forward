@@ -1,9 +1,34 @@
 # Configuration file for <https://github.com/sapcc/go-makefile-maker>
 
+metadata:
+  url: https://github.com/sapcc/with-kubectl-port-forward
+
 binaries:
   - name:        with-kubectl-port-forward
     fromPackage: .
     installTo:   bin/
 
-vendoring:
+golang:
+  enableVendoring: true
+  setGoModVersion: true
+
+golangciLint:
+  createConfig: true
+
+githubWorkflow:
+  ci:
+    enabled: true
+    coveralls: true
+    ignorePaths:
+      - "**.md" # all Markdown files
+    postgres:
+      enabled: true
+  license:
+    enabled: true
+  securityChecks:
+    enabled: true
+renovate:
   enabled: true
+  assignees:
+    - majewsky
+    - SuperSandro2000
