@@ -40,6 +40,8 @@ func runKubectlPortForward(ctx context.Context, args []string, errChan chan<- er
 	cmdline := buildKubectlPortForwardCmdline(args)
 	stderr := io.MultiWriter(&portReadableDetector{portReadableChan: portReadableChan}, os.Stderr)
 	cmd := exec.CommandContext(ctx, cmdline[0], cmdline[1:]...) //nolint:gosec // we explicitly want to pass through the user-supplied command
+	cmd.Cancel = func() error { return cmd.Process.Signal(os.Interrupt) }
+	cmd.WaitDelay = 3 * time.Second
 	cmd.Stdin = nil
 	cmd.Stdout = stderr //os.Stdout is exclusively reserved for the actual payload command
 	cmd.Stderr = stderr
@@ -76,6 +78,8 @@ func runSubcommand(ctx context.Context, cmdline []string, errChan chan<- error, 
 	}
 
 	cmd := exec.CommandContext(ctx, cmdline[0], cmdline[1:]...) //nolint:gosec // we explicitly want to pass through the user-supplied command
+	cmd.Cancel = func() error { return cmd.Process.Signal(os.Interrupt) }
+	cmd.WaitDelay = 3 * time.Second
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
