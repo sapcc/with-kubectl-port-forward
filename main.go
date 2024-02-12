@@ -36,7 +36,8 @@ func main() {
 	portForwardArgs, subcommandArgs := splitArgs()
 
 	//setup async machinery
-	ctx, cancel := contextWithSIGINT(context.Background()) //once one subprocess returns, we cancel this ctx to reap the other one
+	ctx, cancel := signal.NotifyContext(context.Background(), //once one subprocess returns, we cancel this ctx to reap the other one
+		os.Interrupt, syscall.SIGTERM)
 	var wg sync.WaitGroup
 	errChan := make(chan error, 2)          //collects errors from the subprocess; any error from one will terminate the whole program
 	portReadableChan := make(chan struct{}) //signals that the ports are established and the subcommand can start
@@ -65,19 +66,4 @@ func main() {
 		fmt.Fprintln(os.Stderr, "error: "+err.Error())
 		os.Exit(1)
 	}
-}
-
-var shutdownSignals = []os.Signal{os.Interrupt, syscall.SIGTERM}
-
-func contextWithSIGINT(ctx context.Context) (context.Context, context.CancelFunc) {
-	ctx, cancel := context.WithCancel(ctx)
-	signalChan := make(chan os.Signal, 1)
-	signal.Notify(signalChan, shutdownSignals...)
-	go func() {
-		<-signalChan
-		signal.Reset(shutdownSignals...)
-		close(signalChan)
-		cancel()
-	}()
-	return ctx, cancel
 }
