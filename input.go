@@ -32,6 +32,7 @@ func splitArgs() (argsForPortForward, cmdline []string) {
 		}
 		if arg == "--" {
 			doubleDashIndex = idx
+			break
 		}
 		if arg == "--help" {
 			usage(0)
