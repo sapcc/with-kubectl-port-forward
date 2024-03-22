@@ -43,7 +43,7 @@ func runKubectlPortForward(ctx context.Context, args []string, errChan chan<- er
 	cmd.Cancel = func() error { return cmd.Process.Signal(os.Interrupt) }
 	cmd.WaitDelay = 3 * time.Second
 	cmd.Stdin = nil
-	cmd.Stdout = stderr //os.Stdout is exclusively reserved for the actual payload command
+	cmd.Stdout = stderr // os.Stdout is exclusively reserved for the actual payload command
 	cmd.Stderr = stderr
 	errChan <- cmd.Run()
 }
@@ -58,7 +58,7 @@ type portReadableDetector struct {
 func (d *portReadableDetector) Write(buf []byte) (int, error) {
 	if !d.done && bytes.Contains(buf, []byte("Forwarding from")) {
 		go func() {
-			//give kubectl some extra time if it needs to listen on multiple ports
+			// give kubectl some extra time if it needs to listen on multiple ports
 			time.Sleep(25 * time.Microsecond)
 			close(d.portReadableChan)
 		}()
@@ -68,11 +68,11 @@ func (d *portReadableDetector) Write(buf []byte) (int, error) {
 }
 
 func runSubcommand(ctx context.Context, cmdline []string, errChan chan<- error, portReadableChan <-chan struct{}) {
-	//wait for either the port-forward to become active, or for the port-forward
-	//failing and its failure being signaled to us by canceling `ctx`
+	// wait for either the port-forward to become active, or for the port-forward
+	// failing and its failure being signaled to us by canceling `ctx`
 	select {
 	case <-portReadableChan:
-		//continue below
+		// continue below
 	case <-ctx.Done():
 		return
 	}

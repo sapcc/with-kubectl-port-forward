@@ -32,17 +32,17 @@ import (
 )
 
 func main() {
-	//parse command line
+	// parse command line
 	portForwardArgs, subcommandArgs := splitArgs()
 
-	//setup async machinery
-	ctx, cancel := signal.NotifyContext(context.Background(), //once one subprocess returns, we cancel this ctx to reap the other one
+	// setup async machinery
+	ctx, cancel := signal.NotifyContext(context.Background(), // once one subprocess returns, we cancel this ctx to reap the other one
 		os.Interrupt, syscall.SIGTERM)
 	var wg sync.WaitGroup
-	errChan := make(chan error, 2)          //collects errors from the subprocess; any error from one will terminate the whole program
-	portReadableChan := make(chan struct{}) //signals that the ports are established and the subcommand can start
+	errChan := make(chan error, 2)          // collects errors from the subprocess; any error from one will terminate the whole program
+	portReadableChan := make(chan struct{}) // signals that the ports are established and the subcommand can start
 
-	//run subprocesses
+	// run subprocesses
 	wg.Add(2)
 	go func() {
 		defer wg.Done()
@@ -53,7 +53,7 @@ func main() {
 		runSubcommand(ctx, subcommandArgs, errChan, portReadableChan)
 	}()
 
-	//once either exits, cancel the other
+	// once either exits, cancel the other
 	err := <-errChan
 	cancel()
 	wg.Wait()
