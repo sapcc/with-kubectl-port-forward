@@ -36,7 +36,7 @@ GO_BUILDENV =
 build-all: build/with-kubectl-port-forward
 
 build/with-kubectl-port-forward: FORCE
-	@env $(GO_BUILDENV) go build $(GO_BUILDFLAGS) -ldflags '-s -w $(GO_LDFLAGS)' -o build/with-kubectl-port-forward .
+	env $(GO_BUILDENV) go build $(GO_BUILDFLAGS) -ldflags '-s -w $(GO_LDFLAGS)' -o build/with-kubectl-port-forward .
 
 DESTDIR =
 ifeq ($(shell uname -s),Darwin)
