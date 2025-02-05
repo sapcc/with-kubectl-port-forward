@@ -1,4 +1,4 @@
-module github.wdf.sap.corp/isg/with-kubectl-port-forward
+module github.com/sapcc/with-kubectl-port-forward
 
 go 1.23
 
