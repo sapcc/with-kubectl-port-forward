@@ -86,7 +86,7 @@ linters-settings:
       - yodaStyleExpr
   goimports:
     # Put local imports after 3rd-party packages.
-    local-prefixes: github.wdf.sap.corp/isg/with-kubectl-port-forward
+    local-prefixes: github.com/sapcc/with-kubectl-port-forward
   gomoddirectives:
     go-version-pattern: '1\.\d+(\.0)?$'
     replace-allow-list:
