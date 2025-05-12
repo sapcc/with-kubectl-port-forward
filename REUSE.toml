@@ -18,13 +18,17 @@ SPDX-FileCopyrightText = "SAP SE"
 SPDX-License-Identifier = "Apache-2.0"
 
 [[annotations]]
-path = [ "vendor/github.com/sapcc/go-bits/**" ]
+path = [
+  "vendor/github.com/sapcc/go-bits/**",
+]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "Other"
 SPDX-License-Identifier = "Apache-2.0"
 
 [[annotations]]
-path = [ "vendor/github.com/sergi/go-diff/**" ]
+path = [
+  "vendor/github.com/sergi/go-diff/**",
+]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "Other"
 SPDX-License-Identifier = "MIT"
