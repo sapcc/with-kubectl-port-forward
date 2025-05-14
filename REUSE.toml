@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: SAP SE
 # SPDX-License-Identifier: Apache-2.0
 version = 1
+SPDX-PackageName = "with-kubectl-port-forward"
+SPDX-PackageDownloadLocation = "https://github.com/sapcc/with-kubectl-port-forward"
 
 [[annotations]]
 path = [
