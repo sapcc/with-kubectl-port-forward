@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2025 SAP SE or an SAP affiliate company
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # with-kubectl-port-forward
 
 As the name implies, this tool executes `kubectl port-forward` for the duration
