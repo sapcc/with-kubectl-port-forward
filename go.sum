@@ -1,4 +1,4 @@
-github.com/sapcc/go-bits v0.0.0-20260226170120-c20f89b66c3c h1:GX6ADtKR6Bs2bBRBqeJf376MsxLNppC1SOHLIBuQwIA=
-github.com/sapcc/go-bits v0.0.0-20260226170120-c20f89b66c3c/go.mod h1:AYC4f8FYO9DllSt4TyMwm1e5iPn32/DGIrlgXtuEsJ0=
+github.com/sapcc/go-bits v0.0.0-20260304154021-aa2c8a1d2bca h1:Usupk+8YVjlq1KV0UAhFIeTwjdhU7oPhJrcRot6oTDQ=
+github.com/sapcc/go-bits v0.0.0-20260304154021-aa2c8a1d2bca/go.mod h1:HfqXnCZz9QbG/i342+dsxIUNlFXI+o1+5EzkowBWD/k=
 github.com/sergi/go-diff v1.4.0 h1:n/SP9D5ad1fORl+llWyN+D6qoUETXNZARKjyY2/KVCw=
 github.com/sergi/go-diff v1.4.0/go.mod h1:A0bzQcvG0E7Rwjx0REVgAGH58e96+X0MeOfepqsbeW4=
