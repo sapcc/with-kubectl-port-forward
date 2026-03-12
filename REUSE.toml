@@ -29,7 +29,7 @@ SPDX-License-Identifier = "Apache-2.0"
 path = [
   "vendor/github.com/sapcc/go-bits/**",
 ]
-precedence = "aggregate"
+precedence = "override"
 SPDX-FileCopyrightText = "Other"
 SPDX-License-Identifier = "Apache-2.0"
 
@@ -37,6 +37,6 @@ SPDX-License-Identifier = "Apache-2.0"
 path = [
   "vendor/github.com/sergi/go-diff/**",
 ]
-precedence = "aggregate"
+precedence = "override"
 SPDX-FileCopyrightText = "Other"
 SPDX-License-Identifier = "MIT"
