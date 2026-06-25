@@ -36,8 +36,8 @@ SPDX-License-Identifier = "Apache-2.0"
 
 [[annotations]]
 path = [
-  "vendor/github.com/sergi/go-diff/**",
+  "vendor/go.xyrillian.de/gg/**",
 ]
 precedence = "override"
 SPDX-FileCopyrightText = "Other"
-SPDX-License-Identifier = "MIT"
+SPDX-License-Identifier = "Apache-2.0"
