@@ -2,4 +2,4 @@ module github.com/sapcc/with-kubectl-port-forward
 
 go 1.26
 
-require github.com/sapcc/go-bits v0.0.0-20260730170321-f6f727520601
+require github.com/sapcc/go-bits v0.0.0-20260806170240-4bbc84d224db
